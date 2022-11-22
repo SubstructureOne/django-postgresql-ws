@@ -1,8 +1,6 @@
+import ipaddress
 import json
 from functools import lru_cache, partial
-
-from psycopg2.extras import Inet
-from psycopg2.extras import Json as Jsonb
 
 from django.conf import settings
 from django.db.backends.base.operations import BaseDatabaseOperations
@@ -315,12 +313,15 @@ class DatabaseOperations(BaseDatabaseOperations):
         return value
 
     def adapt_ipaddressfield_value(self, value):
+        # FIXME?
         if value:
-            return Inet(value)
+            return ipaddress.ip_address(value)
         return None
 
     def adapt_json_value(self, value, encoder):
-        return Jsonb(value, dumps=get_json_dumps(encoder))
+        # FIXME ???
+        return value
+        # return Jsonb(value, dumps=get_json_dumps(encoder))
 
     def subtract_temporals(self, internal_type, lhs, rhs):
         if internal_type == "DateField":

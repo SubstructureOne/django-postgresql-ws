@@ -1,5 +1,3 @@
-import psycopg2
-
 from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 from django.db.backends.ddl_references import IndexColumns
 from django.db.backends.utils import strip_quotes
@@ -49,14 +47,16 @@ class DatabaseSchemaEditor(BaseDatabaseSchemaEditor):
         "ALTER TABLE %(table)s ALTER COLUMN %(column)s DROP IDENTITY IF EXISTS"
     )
 
-    def quote_value(self, value):
-        if isinstance(value, str):
-            value = value.replace("%", "%%")
-        adapted = psycopg2.extensions.adapt(value)
-        if hasattr(adapted, "encoding"):
-            adapted.encoding = "utf8"
-        # getquoted() returns a quoted bytestring of the adapted value.
-        return adapted.getquoted().decode()
+    # FIXME? Can we just leave this unimplemented?
+    # def quote_value(self, value):
+    #     super(DatabaseSchemaEditor, self).quote_value()
+    #     if isinstance(value, str):
+    #         value = value.replace("%", "%%")
+    #     adapted = psycopg2.extensions.adapt(value)
+    #     if hasattr(adapted, "encoding"):
+    #         adapted.encoding = "utf8"
+    #     # getquoted() returns a quoted bytestring of the adapted value.
+    #     return adapted.getquoted().decode()
 
     def _field_indexes_sql(self, model, field):
         output = super()._field_indexes_sql(model, field)

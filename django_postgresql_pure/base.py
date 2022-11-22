@@ -1,7 +1,5 @@
 """
-PostgreSQL database backend for Django.
-
-Requires psycopg 2: https://www.psycopg.org/
+Pure-Python PostgreSQL database backend for Django.
 """
 
 import asyncio
@@ -21,28 +19,12 @@ from django.utils.safestring import SafeString
 from django.utils.version import get_version_tuple
 
 try:
-    import psycopg2 as Database
-    import psycopg2.extensions
-    import psycopg2.extras
+    import pg8000 as Database
 except ImportError as e:
     raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
 
 
-def psycopg2_version():
-    version = psycopg2.__version__.split(" ", 1)[0]
-    return get_version_tuple(version)
-
-
-PSYCOPG2_VERSION = psycopg2_version()
-
-if PSYCOPG2_VERSION < (2, 8, 4):
-    raise ImproperlyConfigured(
-        "psycopg2 version 2.8.4 or newer is required; you have %s"
-        % psycopg2.__version__
-    )
-
-
-# Some of these import psycopg2, so import them after checking if it's installed.
+# Some of these import pg8000, so import them after checking if it's installed.
 from .client import DatabaseClient  # NOQA
 from .creation import DatabaseCreation  # NOQA
 from .features import DatabaseFeatures  # NOQA
@@ -50,23 +32,10 @@ from .introspection import DatabaseIntrospection  # NOQA
 from .operations import DatabaseOperations  # NOQA
 from .schema import DatabaseSchemaEditor  # NOQA
 
-psycopg2.extensions.register_adapter(SafeString, psycopg2.extensions.QuotedString)
-psycopg2.extras.register_uuid()
-
-# Register support for inet[] manually so we don't have to handle the Inet()
-# object on load all the time.
-INETARRAY_OID = 1041
-INETARRAY = psycopg2.extensions.new_array_type(
-    (INETARRAY_OID,),
-    "INETARRAY",
-    psycopg2.extensions.UNICODE,
-)
-psycopg2.extensions.register_type(INETARRAY)
-
 
 class DatabaseWrapper(BaseDatabaseWrapper):
     vendor = "postgresql"
-    display_name = "PostgreSQL"
+    display_name = "PostgreSQL (Pure)"
     # This dictionary maps Field objects to their associated PostgreSQL column
     # types, as strings. Column-type strings can contain format strings; they'll
     # be interpolated against the values of Field.__dict__ before being output.
@@ -213,60 +182,43 @@ class DatabaseWrapper(BaseDatabaseWrapper):
     @async_unsafe
     def get_new_connection(self, conn_params):
         connection = Database.connect(**conn_params)
-
-        # self.isolation_level must be set:
-        # - after connecting to the database in order to obtain the database's
-        #   default when no value is explicitly specified in options.
-        # - before calling _set_autocommit() because if autocommit is on, that
-        #   will set connection.isolation_level to ISOLATION_LEVEL_AUTOCOMMIT.
-        options = self.settings_dict["OPTIONS"]
-        try:
-            self.isolation_level = options["isolation_level"]
-        except KeyError:
-            self.isolation_level = connection.isolation_level
-        else:
-            # Set the isolation level to the value from OPTIONS.
-            if self.isolation_level != connection.isolation_level:
-                connection.set_session(isolation_level=self.isolation_level)
-        # Register dummy loads() to avoid a round trip from psycopg2's decode
-        # to json.dumps() to json.loads(), when using a custom decoder in
-        # JSONField.
-        psycopg2.extras.register_default_jsonb(
-            conn_or_curs=connection, loads=lambda x: x
-        )
         return connection
 
     def ensure_timezone(self):
-        if self.connection is None:
-            return False
-        conn_timezone_name = self.connection.get_parameter_status("TimeZone")
-        timezone_name = self.timezone_name
-        if timezone_name and conn_timezone_name != timezone_name:
-            with self.connection.cursor() as cursor:
-                cursor.execute(self.ops.set_time_zone_sql(), [timezone_name])
-            return True
+        # FIXME
+        # if self.connection is None:
+        #     return False
+        # conn_timezone_name = self.connection.get_parameter_status("TimeZone")
+        # timezone_name = self.timezone_name
+        # if timezone_name and conn_timezone_name != timezone_name:
+        #     with self.connection.cursor() as cursor:
+        #         cursor.execute(self.ops.set_time_zone_sql(), [timezone_name])
+        #     return True
         return False
 
     def init_connection_state(self):
         super().init_connection_state()
-        self.connection.set_client_encoding("UTF8")
-
-        timezone_changed = self.ensure_timezone()
-        if timezone_changed:
-            # Commit after setting the time zone (see #17062)
-            if not self.get_autocommit():
-                self.connection.commit()
+        # FIXME?
+        # self.connection.set_client_encoding("UTF8")
+        #
+        # timezone_changed = self.ensure_timezone()
+        # if timezone_changed:
+        #     # Commit after setting the time zone (see #17062)
+        #     if not self.get_autocommit():
+        #         self.connection.commit()
 
     @async_unsafe
     def create_cursor(self, name=None):
-        if name:
-            # In autocommit mode, the cursor will be used outside of a
-            # transaction, hence use a holdable cursor.
-            cursor = self.connection.cursor(
-                name, scrollable=False, withhold=self.connection.autocommit
-            )
-        else:
-            cursor = self.connection.cursor()
+        # FIXME?
+        # if name:
+        #     # In autocommit mode, the cursor will be used outside of a
+        #     # transaction, hence use a holdable cursor.
+        #     cursor = self.connection.cursor(
+        #         name, scrollable=False, withhold=self.connection.autocommit
+        #     )
+        # else:
+        #     cursor = self.connection.cursor()
+        cursor = self.connection.cursor()
         cursor.tzinfo_factory = self.tzinfo_factory if settings.USE_TZ else None
         return cursor
 

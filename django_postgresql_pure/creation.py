@@ -1,7 +1,5 @@
 import sys
 
-from psycopg2 import errorcodes
-
 from django.core.exceptions import ImproperlyConfigured
 from django.db.backends.base.creation import BaseDatabaseCreation
 from django.db.backends.utils import strip_quotes
@@ -46,14 +44,15 @@ class DatabaseCreation(BaseDatabaseCreation):
                 return
             super()._execute_create_test_db(cursor, parameters, keepdb)
         except Exception as e:
-            if getattr(e.__cause__, "pgcode", "") != errorcodes.DUPLICATE_DATABASE:
-                # All errors except "database already exists" cancel tests.
-                self.log("Got an error creating the test database: %s" % e)
-                sys.exit(2)
-            elif not keepdb:
-                # If the database should be kept, ignore "database already
-                # exists".
-                raise
+            # FIXME?
+            # if getattr(e.__cause__, "pgcode", "") != errorcodes.DUPLICATE_DATABASE:
+            # All errors except "database already exists" cancel tests.
+            self.log("Got an error creating the test database: %s" % e)
+            sys.exit(2)
+            # elif not keepdb:
+            #     # If the database should be kept, ignore "database already
+            #     # exists".
+            #     raise
 
     def _clone_test_db(self, suffix, verbosity, keepdb=False):
         # CREATE DATABASE ... WITH TEMPLATE ... requires closing connections
