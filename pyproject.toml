@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "django-postgresql-pure"
+version = "0.1.0"
+description = ""
+authors = ["David Eklund <deklund@gmail.com>"]
+readme = "README.md"
+packages = [{include = "django_postgresql_pure"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pg8000 = {git = "ssh://github.com/SubstructureOne/pg8000.git", rev = "websocket"}
+django = "^4.1.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
