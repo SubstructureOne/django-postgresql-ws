@@ -99,25 +99,6 @@ python-versions = ">=3.6"
 pyparsing = ">=2.0.2,<3.0.5 || >3.0.5"
 
 [[package]]
-name = "pg8000"
-version = "0.0.0.post846+gcda5f43"
-description = "PostgreSQL interface library"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-develop = false
-
-[package.dependencies]
-python-dateutil = ">=2.8.2"
-scramp = ">=1.4.3"
-
-[package.source]
-type = "git"
-url = "ssh://github.com/SubstructureOne/pg8000.git"
-reference = "websocket"
-resolved_reference = "cda5f43e242101ddbcfa30d223d2bf4cbe2d43a8"
-
-[[package]]
 name = "pgwasm"
 version = "0.1.1"
 description = "PostgreSQL interface for WebAssembly over WebSockets"
@@ -264,7 +245,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "544897e44fa07a6685597d57bcaf1db7184e8b8618657860ef906cc43916b127"
+content-hash = "7b1eca2dff1c53ff8407ebf61df90a956041a6d40d493e4f69d7cb25d115674a"
 
 [metadata.files]
 asgiref = [
@@ -317,7 +298,6 @@ packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
     {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
 ]
-pg8000 = []
 pgwasm = [
     {file = "pgwasm-0.1.1-py3-none-any.whl", hash = "sha256:38c0e6f373fe2ddc32a335fb6977794b0e59eb4845ad00bcbbf7c9960d7e6133"},
     {file = "pgwasm-0.1.1.tar.gz", hash = "sha256:52981990cc9ec12bd906b5b116549b7de27d4625c781af4974e931b6a95e180a"},

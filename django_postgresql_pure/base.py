@@ -17,6 +17,7 @@ from django.utils.asyncio import async_unsafe
 from django.utils.functional import cached_property
 from django.utils.safestring import SafeString
 from django.utils.version import get_version_tuple
+from asgiref.sync import async_to_sync
 
 try:
     import pgwasm as Database
@@ -188,7 +189,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     @async_unsafe
     def get_new_connection(self, conn_params):
-        connection = Database.connect(**conn_params)
+        connection = async_to_sync(Database.connect)(**conn_params)
         return connection
 
     def ensure_timezone(self):
@@ -270,14 +271,15 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         afterward.
         """
         with self.cursor() as cursor:
-            cursor.execute("SET CONSTRAINTS ALL IMMEDIATE")
-            cursor.execute("SET CONSTRAINTS ALL DEFERRED")
+            execute = async_to_sync(cursor.execute)
+            execute("SET CONSTRAINTS ALL IMMEDIATE")
+            execute("SET CONSTRAINTS ALL DEFERRED")
 
     def is_usable(self):
         try:
             # Use a psycopg cursor directly, bypassing Django's utilities.
             with self.connection.cursor() as cursor:
-                cursor.execute("SELECT 1")
+                async_to_sync(cursor.execute)("SELECT 1")
         except Database.Error:
             return False
         else:
@@ -316,7 +318,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
                         with conn.cursor() as cursor:
                             yield cursor
                     finally:
-                        conn.close()
+                        async_to_sync(conn.close)()
                     break
             else:
                 raise
