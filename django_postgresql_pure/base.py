@@ -179,10 +179,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params["user"] = settings_dict["USER"]
         if settings_dict["PASSWORD"]:
             conn_params["password"] = settings_dict["PASSWORD"]
-        if settings_dict["HOST"]:
-            conn_params["host"] = settings_dict["HOST"]
-        if settings_dict["PORT"]:
-            conn_params["port"] = settings_dict["PORT"]
+        # if settings_dict["HOST"]:
+        #     conn_params["host"] = settings_dict["HOST"]
+        # if settings_dict["PORT"]:
+        #     conn_params["port"] = settings_dict["PORT"]
+        if settings_dict["URI"]:
+            conn_params["uri"] = settings_dict["URI"]
         return conn_params
 
     @async_unsafe
