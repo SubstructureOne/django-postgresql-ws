@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+from asgiref.sync import async_to_sync
 from django.db.backends.base.introspection import BaseDatabaseIntrospection
 from django.db.backends.base.introspection import FieldInfo as BaseFieldInfo
 from django.db.backends.base.introspection import TableInfo
@@ -54,7 +55,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
 
     def get_table_list(self, cursor):
         """Return a list of table and view names in the current database."""
-        cursor.execute(
+        async_to_sync(cursor.execute)(
             """
             SELECT
                 c.relname,
@@ -84,7 +85,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         # Query the pg_catalog tables as cursor.description does not reliably
         # return the nullable property and information_schema.columns does not
         # contain details of materialized views.
-        cursor.execute(
+        execute = async_to_sync(cursor.execute)
+        execute(
             """
             SELECT
                 a.attname AS column_name,
@@ -106,7 +108,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
             [table_name],
         )
         field_map = {line[0]: line[1:] for line in cursor.fetchall()}
-        cursor.execute(
+        execute(
             "SELECT * FROM %s LIMIT 1" % self.connection.ops.quote_name(table_name)
         )
         return [
@@ -123,7 +125,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         ]
 
     def get_sequences(self, cursor, table_name, table_fields=()):
-        cursor.execute(
+        async_to_sync(cursor.execute)(
             """
             SELECT
                 s.relname AS sequence_name,
@@ -153,7 +155,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         Return a dictionary of {field_name: (field_name_other_table, other_table)}
         representing all foreign keys in the given table.
         """
-        cursor.execute(
+        async_to_sync(cursor.execute)(
             """
             SELECT a1.attname, c2.relname, a2.attname
             FROM pg_constraint con
@@ -183,7 +185,8 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
         # Loop over the key table, collecting things as constraints. The column
         # array must return column names in the same order in which they were
         # created.
-        cursor.execute(
+        execute = async_to_sync(cursor.execute)
+        execute(
             """
             SELECT
                 c.conname,
@@ -218,7 +221,7 @@ class DatabaseIntrospection(BaseDatabaseIntrospection):
                 "options": options,
             }
         # Now get indexes
-        cursor.execute(
+        execute(
             """
             SELECT
                 indexname,
