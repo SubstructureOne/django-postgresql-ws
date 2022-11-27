@@ -183,8 +183,6 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params["host"] = settings_dict["HOST"]
         if settings_dict["PORT"]:
             conn_params["port"] = settings_dict["PORT"]
-        if settings_dict["WEBSOCKET"]:
-            conn_params["websocket"] = settings_dict["WEBSOCKET"]
         return conn_params
 
     @async_unsafe
