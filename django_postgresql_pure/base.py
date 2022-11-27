@@ -19,7 +19,7 @@ from django.utils.safestring import SafeString
 from django.utils.version import get_version_tuple
 
 try:
-    import pg8000 as Database
+    import pgwasm as Database
 except ImportError as e:
     raise ImproperlyConfigured("Error loading psycopg2 module: %s" % e)
 
@@ -132,7 +132,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         Return a tuple of the database's version.
         E.g. for pg_version 120004, return (12, 4).
         """
-        return divmod(self.pg_version, 10000)
+        # with self.temporary_connection() as cursor:
+        #     cursor.execute("select current_setting('server_version')")
+        #     result = cursor.fetchall()
+        # return divmod(self.pg_version, 10000)
+        # FIXME
+        return 14, 5,
 
     def get_connection_params(self):
         settings_dict = self.settings_dict
@@ -177,6 +182,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             conn_params["host"] = settings_dict["HOST"]
         if settings_dict["PORT"]:
             conn_params["port"] = settings_dict["PORT"]
+        if settings_dict["WEBSOCKET"]:
+            conn_params["websocket"] = settings_dict["WEBSOCKET"]
         return conn_params
 
     @async_unsafe
@@ -316,7 +323,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
 
     @cached_property
     def pg_version(self):
-        with self.temporary_connection():
+        with self.temporary_connection() as cursor:
             return self.connection.server_version
 
     def make_debug_cursor(self, cursor):

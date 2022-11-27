@@ -2,7 +2,7 @@
 name = "django-postgresql-pure"
 version = "0.1.0"
 description = ""
-authors = ["David Eklund <deklund@gmail.com>"]
+authors = ["dek <dek@substructure.one>"]
 readme = "README.md"
 packages = [{include = "django_postgresql_pure"}]
 
@@ -10,6 +10,7 @@ packages = [{include = "django_postgresql_pure"}]
 python = "^3.8"
 pg8000 = {git = "ssh://github.com/SubstructureOne/pg8000.git", rev = "websocket"}
 django = "^4.1.3"
+pgwasm = "^0.1.1"
 
 
 [build-system]
