@@ -1,6 +1,5 @@
 import sys
 
-from asgiref.sync import async_to_sync
 from django.core.exceptions import ImproperlyConfigured
 from django.db.backends.base.creation import BaseDatabaseCreation
 from django.db.backends.utils import strip_quotes
@@ -31,7 +30,7 @@ class DatabaseCreation(BaseDatabaseCreation):
         )
 
     def _database_exists(self, cursor, database_name):
-        async_to_sync(cursor.execute)(
+        cursor.execute(
             "SELECT 1 FROM pg_catalog.pg_database WHERE datname = %s",
             [strip_quotes(database_name)],
         )
