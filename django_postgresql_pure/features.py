@@ -10,6 +10,7 @@ class DatabaseFeatures(BaseDatabaseFeatures):
     allows_group_by_selected_pks = True
     can_return_columns_from_insert = True
     can_return_rows_from_bulk_insert = True
+    empty_fetchmany_value = ()
     has_real_datatype = True
     has_native_uuid_field = True
     has_native_duration_field = True
