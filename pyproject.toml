@@ -6,6 +6,7 @@ authors = ["dek <dek@substructure.one>"]
 readme = "README.md"
 packages = [{include = "django_postgresql_ws"}]
 license = "BSD-3-Clause"
+repository = "https://github.com/SubstructureOne/django-postgresql-ws"
 classifiers = [
     "Environment :: Web Environment",
     "Framework :: Django",
