@@ -19,8 +19,8 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 django = "^4.1.3"
-pgwasm = "^0.2.1"
-#pgwasm = {git = "github.com:SubstructureOne/pgwasm.git", rev = "main"}
+#pgwasm = "^0.2.1"
+pgwasm = {git = "github.com:SubstructureOne/pgwasm.git", rev = "sync"}
 asgiref = "^3.5.2"
 
 
